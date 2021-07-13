@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>WebRTC Video call, Chat Room & Screen Sharing.</title>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-3XM60XK9RQ"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-3XM60XK9RQ");
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <meta
+      name="description"
+      content="MiroTalk powered by WebRTC, Real-time Simple Secure Fast video calls, chat and screen sharing capabilities in the browser, from your mobile or desktop."
+    />
+    <meta
+      name="keywords"
+      content="webrtc, webrtc stun, webrtc turn, video meeting, video chat, multi video chat, peer to peer, p2p, zoom"
+    />
+    <!-- https://ogp.me -->
+    <meta property="og:type" content="app-webrtc" />
+    <meta property="og:site_name" content="MiroTalk" />
+    <meta property="og:title" content="Click the link to join this call." />
+    <meta
+      property="og:description"
+      content="Free WebRTC browser-based video call."
+    />
+    <meta property="og:image" content="/images/mirotalk.png" />
+    <meta property="og:url" content="https://mirotalk.herokuapp.com/" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/images/favicon.png"
+    />
+    <!-- mirotalk css -->
+    <link rel="stylesheet" href="/css/chat.css" />
+   
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.7.0/firebase-firestore.js"></script>
+  </head>
+
+  <body onload="initPeer()">
+    
+    <div id="webRTCSeo"><h1>WebRTC</h1></div>
+
+    
+    <div id="loadingDiv">
+      <h1 class="pulsate">Loading...</h1>
+      <pre>
+Please allow camera & microphone
+access to use this app.
+      </pre>
+    </div>
+    <!-- Start left buttons 
+    https://fontawesome.com/icons?d=gallery
+    -->
+    <div id="leftButtons">
+     
+    
+      <button id="leaveRoomBtn">  Leave Room</button>
+      <button id="shareRoomBtn" >  Share URL</button>
+      <button id="callRoomBtn">
+          Start Meeting
+      </button>
+    </div>
+    <!-- End left buttons -->
+
+    <!-- Start chat room 
+    https://codepen.io/sajadhsm/pen/odaBdd
+    https://getemoji.com
+    -->
+    <section id="msgerDraggable" class="msger-draggable">
+      <section id="msger" class="msger">
+        <header id="msgerHeader" class="msger-header">
+          <div class="msger-header-title">
+            <i class="fas fa-comment-alt"></i> Chat
+          </div>
+          <div class="msger-header-options">
+           
+            <button id="msgerCPBtn" class="fas fa-users"></button>
+            <button id="msgerClean" class="fas fa-trash"></button>
+            <button id="msgerSaveBtn" class="fas fa-save"></button>
+            
+          </div>
+        </header>
+
+        <!-- public messages example -->
+        <main id="msgerChat" class="msger-chat">
+          <div class="msg left-msg">
+            <div
+              class="msg-img"
+              style="
+                background-image: url('https://eu.ui-avatars.com/api?name=Friends Name&size=24&background=random&rounded=true');
+              "
+            ></div>
+
+            <div class="msg-bubble">
+              <div class="msg-info">
+                <div class="msg-info-name">Friends Name</div>
+                <div class="msg-info-time">00:00:00</div>
+              </div>
+
+              <div class="msg-text">Public message example</div>
+            </div>
+          </div>
+
+          <div class="msg right-msg">
+            <div
+              class="msg-img"
+              style="
+                background-image: url('https://eu.ui-avatars.com/api?name=Your Name&size=24&background=random&rounded=true');
+              "
+            ></div>
+
+            <div class="msg-bubble">
+              <div class="msg-info">
+                <div class="msg-info-name">Your Name</div>
+                <div class="msg-info-time">00:00:00</div>
+              </div>
+
+              <div class="msg-text">Public message example</div>
+            </div>
+          </div>
+
+          <!-- private message example -->
+          
+        </main>
+
+        <div class="msger-inputarea">
+          <input
+            id="msgerInput"
+            class="msger-input"
+            type="text"
+            placeholder="Enter your message..."
+          />
+          <button id="msgerEmojiBtn" class="fas fa-smile"></button>
+          <button id="msgerSendBtn" class="fas fa-paper-plane"></button>
+        </div>
+      </section>
+
+     
+    </section>
+    <!-- End chat room -->
+
+    <!-- Start emoji picker 
+    https://github.com/nolanlawson/emoji-picker-element ] 
+    -->
+    <section id="msgerEmojiPicker">
+      <header id="msgerEmojiHeader">
+        <button id="msgerCloseEmojiBtn" class="fas fa-times"></button>
+      </header>
+      <emoji-picker class="dark"></emoji-picker>
+      <!-- <emoji-picker class="light"></emoji-picker> -->
+    </section>
+    <!-- End emoji picker -->
+
+    
+    <!-- Js scripts -->
+    <script
+      src="https://kit.fontawesome.com/d2f1016e6f.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://cdn.rawgit.com/muaz-khan/DetectRTC/master/DetectRTC.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.16"></script>
+    <script
+      type="module"
+      src="https://unpkg.com/emoji-picker-element@1"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/chat.js"></script>
+    <!-- end of Js scripts -->
+
+    <!-- 
+		the <video> and <audio> tags are all added and removed dynamically
+		in 'onAddStream', 'setupLocalMedia', and 'removePeer'/'disconnect'
+		--></body>
+</html>
